@@ -14,6 +14,6 @@ const app = express();
 app.use(cors());
 app.use(json());
 
-app.listen(process.env.PORTA, () => {
-    console.log(`Servidor ligado na porta ${process.env.PORTA}`)
+app.listen(process.env.PORT || 5000, () => {
+    console.log(`Servidor ligado na porta ${process.env.PORT}`)
 })
