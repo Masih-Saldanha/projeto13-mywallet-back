@@ -70,7 +70,7 @@ app.post("/transaction", async (req, res) => {
     // const { date, value, description } = req.body;
     const userSchema = joi.object({
         date: joi.number().integer().required(),
-        value: joi.number().integer().required(),
+        value: joi.number().required(),
         description: joi.string().required()
     });
     const { error } = userSchema.validate(req.body);
