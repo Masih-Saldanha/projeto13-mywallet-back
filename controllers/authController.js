@@ -33,3 +33,15 @@ export async function signIn(req, res) {
         res.status(500).send("Error logging in user.");
     }
 }
+
+export async function signOut(req, res) {
+    const { session } = res.locals
+    
+    try {
+        await db.collection("sessions").deleteOne({ token: session.token });
+        res.status(200).send("Session finished");
+    } catch (error) {
+        console.log("Error deleting session.", error);
+        res.status(500).send("Error deleting session.");
+    }
+}
