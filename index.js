@@ -121,8 +121,12 @@ app.get("/historic", async (req, res) => {
 
         if (!user) return res.sendStatus(404);
 
+        // console.log("1")
+
         const transactions = await db.collection("wallet").findOne({ userId: user._id });
-        if (!transactions) return res.sendStatus(404);
+        if (!transactions) return res.send([]);
+
+        // console.log(transactions);
 
         res.send(transactions.transactions);
     } catch (error) {
