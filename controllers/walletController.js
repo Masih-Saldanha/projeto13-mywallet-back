@@ -1,4 +1,4 @@
-import joi from "joi"
+import joi from "joi";
 
 import db from "./../db.js";
 
@@ -12,29 +12,14 @@ export async function transaction(req, res) {
     const { error } = userSchema.validate(req.body);
     if (error) return res.sendStatus(422);
 
-    const { authorization } = req.headers;
-    const token = authorization?.replace("Bearer ", "").trim();
-    if (!token) return res.sendStatus(401);
+    const { session } = res.locals
     try {
-        const session = await db.collection("sessions").findOne({ token });
-
-        if (!session) return res.sendStatus(401);
-
-        const user = await db.collection("users").findOne({ _id: session.userId })
-
-        if (!user) return res.sendStatus(404);
-
-        // const transactions = await db.collection("wallet").findOne({ userId: user._id });
-
-        // await db.collection("wallet").updateOne({ userId: user._id }, { $set: });
-
         const userData = await db.collection("wallet").findOne({ userId: session.userId });
         if (!userData) {
             await db.collection("wallet").insertOne({ userId: session.userId, transactions: [req.body] });
         } else {
             await db.collection("wallet").updateOne({ userId: session.userId }, { $set: { transactions: [...userData.transactions, req.body] } });
         }
-
         res.sendStatus(201);
     } catch (error) {
         console.log("Error logging in user.", error);
@@ -44,22 +29,11 @@ export async function transaction(req, res) {
 
 export async function historic(req, res) {
     const { authorization } = req.headers;
-    const token = authorization?.replace("Bearer ", "").trim();
 
-    if (!token) return res.sendStatus(401);
-
+    const { user } = res.locals
     try {
-        const session = await db.collection("sessions").findOne({ token });
-
-        if (!session) return res.sendStatus(401);
-
-        const user = await db.collection("users").findOne({ _id: session.userId })
-
-        if (!user) return res.sendStatus(404);
-
         const transactions = await db.collection("wallet").findOne({ userId: user._id });
         if (!transactions) return res.send([]);
-
         res.send(transactions.transactions);
     } catch (error) {
         console.log("Error logging in user.", error);
