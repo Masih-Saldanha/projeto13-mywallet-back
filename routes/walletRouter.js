@@ -1,13 +1,13 @@
 import { Router } from "express";
 
-import { historic, transaction } from "../controllers/walletController.js";
-import { validateToken } from "../middlewares/walletMiddleware.js";
+import { historic, transaction } from "./../controllers/walletController.js";
+import { validateToken, transactionJoiValidation } from "./../middlewares/walletMiddleware.js";
 
 const walletRouter = Router();
 
 walletRouter.use(validateToken);
 
-walletRouter.post("/transaction", transaction);
+walletRouter.post("/transaction", transactionJoiValidation, transaction);
 
 walletRouter.get("/historic", historic);
 
